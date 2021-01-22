@@ -1,30 +1,61 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:savot_app/widgets/add-product-dialog.dart';
+import 'package:savot_app/models/product.dart';
 import 'package:savot_app/widgets/top-menu.dart';
 
-enum WhyFarther { harder, smarter, selfStarter, tradingCharter }
+class ProductsList extends StatefulWidget {
+  @override
+  _ProductsListState createState() => _ProductsListState();
+}
 
-class ProductsList extends StatelessWidget {
+class _ProductsListState extends State<ProductsList> {
+  Future<dynamic> products;
+
+  @override
+  void initState() {
+    super.initState();
+    products = fetchProducts();
+  }
+
+  Future fetchProducts() async {
+    print('fetch');
+    try {
+      Response response = await Dio().get(
+          "https://ace36d8f73e5.eu.ngrok.io/api/products",
+          options: Options(contentType: 'application/json', headers: {
+            'Authorization': 'Bearer 9|Rx720ZJCQZPkMWtlmIZlPQowL4pUFVwfiDU5ZsIg'
+          }));
+      print(response.data);
+      return response.data;
+    } catch (e) {
+      print(e);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Tu lista'),
-        actions: <Widget>[TopMenu()],
-      ),
-      body: null,
-      floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.add),
-        onPressed: () => {
-          showDialog<void>(
-            context: context,
-            barrierDismissible: true, // user must tap button!
-            builder: (BuildContext context) {
-              return AddProductDialog();
+        appBar: AppBar(
+          title: Text('Tu lista'),
+          actions: <Widget>[TopMenu()],
+        ),
+        body: Center(
+          child: FutureBuilder(
+            future: products,
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                return ListView.builder(
+                  itemCount: snapshot.data.length,
+                  itemBuilder: (context, index) {
+                    Product product = Product.fromJson(snapshot.data[0]);
+                    return Text(product.name);
+                  },
+                );
+              }
+
+              return CircularProgressIndicator();
             },
-          )
-        },
-      ),
-    );
+          ),
+        ));
   }
 }
