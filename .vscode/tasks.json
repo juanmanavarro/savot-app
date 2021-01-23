@@ -1,0 +1,46 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "savot-server",
+            "type": "shell",
+            "command": "cd && cd devilbox && docker-compose up -d php httpd mysql redis",
+            "group": "test",
+            "presentation": {
+                "reveal": "never",
+            },
+            "runOptions": {
+                "runOn": "folderOpen",
+            }
+        },
+        {
+            "label": "savot-ngrok",
+            "type": "shell",
+            "command": "ngrok http -region=eu -host-header=savot.local -subdomain=savot 80",
+            "group": "test",
+            "presentation": {
+                "reveal": "never",
+            },
+            "dependsOrder": "sequence",
+            "dependsOn": ["savot-server"],
+            "runOptions": {
+                "runOn": "folderOpen",
+            }
+        },
+        // {
+        //     "label": "savot-emulator",
+        //     "type": "shell",
+        //     "command": "sudo chmod 777 /dev/kvm && flutter emulators --launch Pixel_2_API_28",
+        //     "group": "test",
+        //     "presentation": {
+        //         "reveal": "always",
+        //         "panel": "new",
+        //     },
+        //     "runOptions": {
+        //         "runOn": "folderOpen",
+        //     }
+        // }
+    ]
+}
