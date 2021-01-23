@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:savot_app/models/product.dart';
+import 'package:savot_app/widgets/products-list/product-tile.dart';
 import 'package:savot_app/widgets/top-menu.dart';
 
 class ProductsList extends StatefulWidget {
@@ -21,7 +22,7 @@ class _ProductsListState extends State<ProductsList> {
     print('fetch');
     try {
       Response response = await Dio().get(
-          "https://ace36d8f73e5.eu.ngrok.io/api/products",
+          "https://savot.eu.ngrok.io/api/products",
           options: Options(contentType: 'application/json', headers: {
             'Authorization': 'Bearer 9|Rx720ZJCQZPkMWtlmIZlPQowL4pUFVwfiDU5ZsIg'
           }));
@@ -39,23 +40,21 @@ class _ProductsListState extends State<ProductsList> {
           title: Text('Tu lista'),
           actions: <Widget>[TopMenu()],
         ),
-        body: Center(
-          child: FutureBuilder(
-            future: products,
-            builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                return ListView.builder(
-                  itemCount: snapshot.data.length,
-                  itemBuilder: (context, index) {
-                    Product product = Product.fromJson(snapshot.data[0]);
-                    return Text(product.name);
-                  },
-                );
-              }
+        body: FutureBuilder(
+          future: products,
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              return ListView.builder(
+                itemCount: snapshot.data.length,
+                itemBuilder: (context, index) {
+                  Product product = Product.fromJson(snapshot.data[index]);
+                  return ProductTile(product: product);
+                },
+              );
+            }
 
-              return CircularProgressIndicator();
-            },
-          ),
+            return CircularProgressIndicator();
+          },
         ));
   }
 }
